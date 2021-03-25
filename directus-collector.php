@@ -131,7 +131,7 @@ class DirectusCollectorPlugin extends Plugin
      */
     private function processCollection(string $collection, array $mapping, object $directusUtil) {
 
-        $requestUrl = $directusUtil->generateRequestUrl($collection);
+        $requestUrl = $directusUtil->generateRequestUrl($collection, 0, $mapping['depth']);
         $response = $directusUtil->get($requestUrl)->toArray();
         $slugger = new AsciiSlugger('de');
         foreach($response['data'] as $dataSet) {

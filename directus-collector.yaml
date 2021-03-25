@@ -1,0 +1,12 @@
+enabled: true
+redirect_route: /404
+mapping:
+  sjm_recycling_services:
+    path: 'user/pages/03.recycling'
+    filename: 'recycling-service.md'
+    frontmatter:
+      column_title: sjm_recycling_service_name
+      column_slug: sjm_recycling_slug
+      column_date: date_created
+      column_sort: sort
+      column_category: false

@@ -1,0 +1,30 @@
+{
+  "name": "erik-konrad/directus-collector",
+  "type": "grav-plugin",
+  "description": "Collects and generates pages from directus headless backend",
+  "keywords": ["plugin"],
+  "homepage": "https://github.com/erik-konrad/grav-plugin-directus-collector",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Erik Konrad",
+      "email": "erik.konrad@zebra.de",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=7.1.3",
+    "symfony/string": "^5.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Grav\\Plugin\\DirectusCollector\\": "classes/"
+    },
+    "classmap":  ["directus-collector.php"]
+  },
+  "config": {
+    "platform": {
+      "php": "7.1.3"
+    }
+  }
+}

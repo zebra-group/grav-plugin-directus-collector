@@ -136,9 +136,9 @@ class DirectusCollectorPlugin extends Plugin
         $slugger = new AsciiSlugger('de');
         foreach($response['data'] as $dataSet) {
 
-
+            // dd($dataSet);
             if(!array_key_exists($mapping['frontmatter']['column_slug'], $dataSet) || !$dataSet[$mapping['frontmatter']['column_slug']] ) {
-                $slug = $slugger->slug($dataSet['sjm_recycling_service_name']);
+                $slug = $slugger->slug($dataSet[$mapping['frontmatter']['column_title']]);
                 $dataSet[$mapping['frontmatter']['column_slug']] = $slug->lower()->toString();
             }
             $frontMatter = '';

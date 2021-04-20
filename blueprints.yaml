@@ -1,17 +1,17 @@
 name: Directus Collector
 slug: directus-collector
 type: plugin
-version: 0.1.0
+version: 0.2.0
 description: Collects and generates pages from directus headless backend
 icon: plug
 author:
   name: Erik Konrad
   email: erik.konrad@zebra.de
-homepage: https://github.com/erik-konrad/grav-plugin-directus-collector
+homepage: https://github.com/zebra-group/grav-plugin-directus-collector
 demo: http://demo.yoursite.com
 keywords: grav, plugin, etc
-bugs: https://github.com/erik-konrad/grav-plugin-directus-collector/issues
-docs: https://github.com/erik-konrad/grav-plugin-directus-collector/blob/develop/README.md
+bugs: https://github.com/zebra-group/grav-plugin-directus-collector/issues
+docs: https://github.com/zebra-group/grav-plugin-directus-collector/blob/develop/README.md
 license: MIT
 
 dependencies:

@@ -138,7 +138,13 @@ class DirectusCollectorPlugin extends Plugin
 
 
             if(!array_key_exists($mapping['frontmatter']['column_slug'], $dataSet) || !$dataSet[$mapping['frontmatter']['column_slug']] ) {
-                $slug = $slugger->slug($dataSet['sjm_recycling_service_name']);
+                try {
+                    $slug = $slugger->slug($dataSet[$mapping['frontmatter']['column_title']]);
+                } catch( \Exception $e) {
+                    dd($dataSet);
+                }
+
+
                 $dataSet[$mapping['frontmatter']['column_slug']] = $slug->lower()->toString();
             }
             $frontMatter = '';
@@ -155,7 +161,7 @@ class DirectusCollectorPlugin extends Plugin
             }
 
             try {
-                $this->createFile($frontMatter, $dataSet[$mapping['frontmatter']['column_slug']], $mapping);
+                $this->createFile($frontMatter, $dataSet['id'], $mapping);
             } catch(\Exception $e) {
                 dump($e);
                 $this->grav['debugger']->addException($e);
@@ -214,6 +220,7 @@ class DirectusCollectorPlugin extends Plugin
             'title: ' . "'" . $dataSet[$mapping['frontmatter']['column_title']] . "'\n" .
             'date: ' . $dateString . "\n" .
             'sort: ' . $dataSet[$mapping['frontmatter']['column_sort']] . "\n" .
+            'slug: ' . $dataSet[$mapping['frontmatter']['column_slug']] . "\n" .
             'directus:' . "\n".
             '    collection: ' . $collection . "\n".
             '    depth: 4' . "\n".

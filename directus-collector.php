@@ -4,6 +4,8 @@ namespace Grav\Plugin;
 use Composer\Autoload\ClassLoader;
 use Grav\Common\Plugin;
 use Grav\Plugin\DirectusCollector\Utility\DirectusCollectorUtility;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
 
@@ -134,8 +136,12 @@ class DirectusCollectorPlugin extends Plugin
         $requestUrl = $directusUtil->generateRequestUrl($collection, 0, $mapping['depth']);
         $response = $directusUtil->get($requestUrl)->toArray();
         $slugger = new AsciiSlugger('de');
-        foreach($response['data'] as $dataSet) {
 
+        $filePathArray = [];
+        $folderList = glob($mapping['path'] . '/*' , GLOB_ONLYDIR);
+
+        foreach($response['data'] as $dataSet) {
+            array_push($filePathArray, $mapping['path'] . '/' . $dataSet['id']);
             if(!array_key_exists($mapping['frontmatter']['column_slug'], $dataSet) || !$dataSet[$mapping['frontmatter']['column_slug']] ) {
 
                 $slug = $slugger->slug($dataSet[$mapping['frontmatter']['column_title']]);
@@ -176,10 +182,31 @@ class DirectusCollectorPlugin extends Plugin
 
         }
 
+        foreach($folderList as $folderpath) {
+            if(!in_array($folderpath, $filePathArray)) {
+                $it = new RecursiveDirectoryIterator($folderpath, RecursiveDirectoryIterator::SKIP_DOTS);
+                $files = new RecursiveIteratorIterator($it,
+                    RecursiveIteratorIterator::CHILD_FIRST);
+                foreach($files as $file) {
+                    if ($file->isDir()){
+                        rmdir($file->getRealPath());
+                    } else {
+                        unlink($file->getRealPath());
+                    }
+                }
+                rmdir($folderpath);
+            }
+        }
+
         return true;
 
     }
 
+    private function cleanupFolders(string $collection, array $dataSet, array $mapping) {
+        $folderList = glob($mapping['path'] . '/*' , GLOB_ONLYDIR);
+        dump($folderList);
+
+    }
 
     /**
      * creates file in file system

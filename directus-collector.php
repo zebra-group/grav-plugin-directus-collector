@@ -211,12 +211,6 @@ class DirectusCollectorPlugin extends Plugin
 
     }
 
-    private function cleanupFolders(string $collection, array $dataSet, array $mapping) {
-        $folderList = glob($mapping['path'] . '/*' , GLOB_ONLYDIR);
-        dump($folderList);
-
-    }
-
     /**
      * creates file in file system
      * @param string $frontMatter

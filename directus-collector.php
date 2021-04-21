@@ -140,6 +140,18 @@ class DirectusCollectorPlugin extends Plugin
 
                 $slug = $slugger->slug($dataSet[$mapping['frontmatter']['column_title']]);
                 $dataSet[$mapping['frontmatter']['column_slug']] = $slug->lower()->toString();
+
+                try {
+                    $data = [
+                        $mapping['frontmatter']['column_slug'] => $dataSet[$mapping['frontmatter']['column_slug']]
+                    ];
+                    /** @var \Symfony\Component\HttpClient\Response\CurlResponse  $response */
+                    $response = $directusUtil->update($collection, $dataSet['id'], $data);
+                } catch(\Exception $e) {
+                    dump($e);
+                    $this->grav['debugger']->addException($e);
+                    exit(500);
+                }
             }
             $frontMatter = '';
             if(array_key_exists('status', $dataSet)) {
@@ -217,7 +229,7 @@ class DirectusCollectorPlugin extends Plugin
             'slug: ' . $dataSet[$mapping['frontmatter']['column_slug']] . "\n" .
             'directus:' . "\n".
             '    collection: ' . $collection . "\n".
-            '    depth: 4' . "\n".
+            '    depth: ' . $mapping['depth'] . "\n".
             '    id: ' . $dataSet['id'] . "\n" .
             '---';
 

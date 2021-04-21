@@ -160,13 +160,22 @@ class DirectusCollectorPlugin extends Plugin
                 }
             }
             $frontMatter = '';
-            if(array_key_exists('status', $dataSet)) {
+
+            if(array_key_exists('status', $dataSet) && ) {
                 switch ($dataSet['status']) {
                     case 'published':
                         $frontMatter = $this->setFileHeaders($dataSet, $mapping, $collection);
                         break;
+                    case 'preview':
+                        if($this->config()['environment_status'] === 'preview') {
+                            $frontMatter = $this->setFileHeaders($dataSet, $mapping, $collection);
+                        } else {
+                            $frontMatter = $this->setRedirectFileHeaders();
+                        }
+                        break;
                     case 'draft':
                         $frontMatter = $this->setRedirectFileHeaders();
+                        break;
                 }
             } else {
                 $frontMatter = $this->setFileHeaders($dataSet, $mapping, $collection);

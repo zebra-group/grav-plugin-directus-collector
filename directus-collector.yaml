@@ -1,6 +1,6 @@
 enabled: true
 redirect_route: /404
-environment_status: 'preview'
+environment_status: 'production'
 mapping:
   sjm_recycling_services:
     path: 'user/pages/03.recycling'

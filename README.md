@@ -54,3 +54,6 @@ Note that if you use the Admin Plugin, a file with your configuration named dire
 
 - [ ] Future plans, if any
 
+### Notices
+ - Slug field does need write permissions
+

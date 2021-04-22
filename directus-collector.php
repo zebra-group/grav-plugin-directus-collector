@@ -132,7 +132,6 @@ class DirectusCollectorPlugin extends Plugin
      * @return bool
      */
     private function processCollection(string $collection, array $mapping, object $directusUtil) {
-
         $requestUrl = $directusUtil->generateRequestUrl($collection, 0, $mapping['depth']);
         $response = $directusUtil->get($requestUrl)->toArray();
         $slugger = new AsciiSlugger('de');
@@ -141,7 +140,6 @@ class DirectusCollectorPlugin extends Plugin
         $folderList = glob($mapping['path'] . '/*' , GLOB_ONLYDIR);
 
         foreach($response['data'] as $dataSet) {
-            array_push($filePathArray, $mapping['path'] . '/' . $dataSet['id']);
             if(!array_key_exists($mapping['frontmatter']['column_slug'], $dataSet) || !$dataSet[$mapping['frontmatter']['column_slug']] ) {
 
                 $slug = $slugger->slug($dataSet[$mapping['frontmatter']['column_title']]);
@@ -182,7 +180,10 @@ class DirectusCollectorPlugin extends Plugin
             }
 
             try {
-                $this->createFile($frontMatter, $dataSet['id'], $mapping);
+                if($dataSet['status'] === 'published' || ($dataSet['status'] === 'preview' && $this->config()['environment_status'] === 'preview')) {
+                    $this->createFile($frontMatter, $dataSet['id'], $mapping);
+                    array_push($filePathArray, $mapping['path'] . '/' . $dataSet['id']);
+                }
             } catch(\Exception $e) {
                 dump($e);
                 $this->grav['debugger']->addException($e);
@@ -253,22 +254,33 @@ class DirectusCollectorPlugin extends Plugin
         $dateString = "'" . date('d-m-Y H:i', $timestamp) . "'";
 
         $frontmatterContent =  '---' . "\n" .
-            'title: ' . "'" . $dataSet[$mapping['frontmatter']['column_title']] . "'\n" .
+            'title: ' . "'" . htmlentities($dataSet[$mapping['frontmatter']['column_title']], ENT_QUOTES) . "'\n" .
             'date: ' . $dateString . "\n" .
-            'sort: ' . $dataSet[$mapping['frontmatter']['column_sort']] . "\n" .
+            ($mapping['frontmatter']['column_sort'] ? 'sort: ' . $dataSet[$mapping['frontmatter']['column_sort']] . "\n" : '') .
             'slug: ' . $dataSet[$mapping['frontmatter']['column_slug']] . "\n" .
+            $this->generateTaxonomySettings($dataSet, $mapping) .
             'directus:' . "\n".
             '    collection: ' . $collection . "\n".
             '    depth: ' . $mapping['depth'] . "\n".
             '    id: ' . $dataSet['id'] . "\n" .
             '---';
 
-        if(isset($dataSet[$mapping['frontmatter']['column_category']])) {
-            $frontmatterContent .=  'taxonomy:' . "\n".
-                                    '    category:' . "\n".
-                                    '        - ' . $dataSet[$mapping['frontmatter']['column_category']] . "\n";
-        }
+
 
         return $frontmatterContent;
     }
+
+    private function generateTaxonomySettings(array $dataSet, array $mapping) {
+        if(isset($dataSet[$mapping['frontmatter']['column_category']])) {
+            $frontmatterContent = 'taxonomy:' . "\n" .
+                '    category:' . "\n" .
+                '        - ' . $dataSet[$mapping['frontmatter']['column_category']] . "\n";
+
+            return $frontmatterContent;
+        }
+
+        return '';
+    }
 }
+
+

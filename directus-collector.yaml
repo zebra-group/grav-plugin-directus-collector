@@ -2,13 +2,23 @@ enabled: true
 redirect_route: /404
 environment_status: 'production'
 mapping:
-  sjm_recycling_services:
-    path: 'user/pages/03.recycling'
-    filename: 'recycling-service.md'
-    depth: 5
+  zbr_cases:
+    path: 'user/pages/04.arbeiten'
+    filename: 'case.md'
+    depth: 4
     frontmatter:
-      column_title: sjm_recycling_service_name
-      column_slug: sjm_recycling_slug
-      column_date: date_created
+      column_title: zbr_title
+      column_slug: zbr_slug
+      column_date: modified_on
       column_sort: sort
       column_category: false
+  zbr_blogpost:
+    path: 'user/pages/08.blog'
+    filename: 'post.md'
+    depth: 4
+    frontmatter:
+      column_title: zbr_title
+      column_slug: zbr_slug
+      column_date: zbr_date
+      column_sort: false
+      column_category: zbr_category

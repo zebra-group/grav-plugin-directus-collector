@@ -161,7 +161,7 @@ class DirectusCollectorPlugin extends Plugin
             }
             $frontMatter = '';
 
-            if(array_key_exists('status', $dataSet) && ) {
+            if(array_key_exists('status', $dataSet)) {
                 switch ($dataSet['status']) {
                     case 'published':
                         $frontMatter = $this->setFileHeaders($dataSet, $mapping, $collection);

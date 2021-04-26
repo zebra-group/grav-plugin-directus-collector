@@ -165,7 +165,7 @@ class DirectusCollectorPlugin extends Plugin
                         $frontMatter = $this->setFileHeaders($dataSet, $mapping, $collection);
                         break;
                     case 'preview':
-                        if($this->config()['environment_status'] === 'preview') {
+                        if(isset($this->grav['config']['system']['env']['state']) && $this->grav['config']['system']['env']['state'] === 'preview') {
                             $frontMatter = $this->setFileHeaders($dataSet, $mapping, $collection);
                         } else {
                             $frontMatter = $this->setRedirectFileHeaders();
@@ -180,7 +180,7 @@ class DirectusCollectorPlugin extends Plugin
             }
 
             try {
-                if($dataSet['status'] === 'published' || ($dataSet['status'] === 'preview' && $this->config()['environment_status'] === 'preview')) {
+                if($dataSet['status'] === 'published' || ($dataSet['status'] === 'preview' && (isset($this->grav['config']['system']['env']['state']) && $this->grav['config']['system']['env']['state'] === 'preview'))) {
                     $this->createFile($frontMatter, $dataSet['id'], $mapping);
                     array_push($filePathArray, $mapping['path'] . '/' . $dataSet['id']);
                 }

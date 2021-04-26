@@ -1,6 +1,5 @@
 enabled: true
 redirect_route: /404
-environment_status: 'production'
 mapping:
   zbr_cases:
     path: 'user/pages/04.arbeiten'

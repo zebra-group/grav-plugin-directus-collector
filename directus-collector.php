@@ -223,6 +223,9 @@ class DirectusCollectorPlugin extends Plugin
             mkdir($mapping['path'] . '/' . $folderName);
         }
         $fp = fopen($mapping['path'] . '/' . $folderName . '/' . $mapping['filename'], 'w');
+        if(file_exists($mapping['path'] . '/' . $folderName . '/data.json')) {
+            unlink($mapping['path'] . '/' . $folderName . '/data.json');
+        }
         fwrite($fp, $frontMatter);
         fclose($fp);
     }

@@ -288,6 +288,12 @@ class DirectusCollectorPlugin extends Plugin
         return $frontmatterContent;
     }
 
+    /**
+     * @param array $dataSet
+     * @param array $mapping
+     * @param array $translation
+     * @return string
+     */
     private function generateTaxonomySettings(array $dataSet, array $mapping, array $translation = []) {
         if(isset($dataSet[$mapping['frontmatter']['column_category']])) {
             $frontmatterContent = 'taxonomy:' . "\n" .

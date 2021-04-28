@@ -140,7 +140,12 @@ class DirectusCollectorPlugin extends Plugin
         $folderList = glob($mapping['path'] . '/*' , GLOB_ONLYDIR);
 
         foreach($response['data'] as $dataSet) {
-            if(!array_key_exists($mapping['frontmatter']['column_slug'], $dataSet) || !$dataSet[$mapping['frontmatter']['column_slug']] ) {
+            if(
+                isset($mapping['frontmatter']['column_slug'])
+                && $mapping['frontmatter']['column_slug']
+                && array_key_exists($mapping['frontmatter']['column_slug'], $dataSet)
+                && !$dataSet[$mapping['frontmatter']['column_slug']]
+            ) {
 
                 $slug = $slugger->slug($dataSet[$mapping['frontmatter']['column_title']]);
                 $dataSet[$mapping['frontmatter']['column_slug']] = $slug->lower()->toString();

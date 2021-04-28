@@ -1,23 +1,13 @@
 enabled: true
 redirect_route: /404
 mapping:
-  zbr_cases:
-    path: 'user/pages/04.arbeiten'
-    filename: 'case.md'
+  table_name:
+    path: 'user/pages/01.parent_page'
+    filename: 'child_page'
     depth: 4
     frontmatter:
-      column_title: zbr_title
-      column_slug: zbr_slug
-      column_date: modified_on
+      column_title: title_fieldname
+      column_slug: slug_fieldname
+      column_date: date_fieldname
       column_sort: sort
-      column_category: false
-  zbr_blogpost:
-    path: 'user/pages/08.blog'
-    filename: 'post.md'
-    depth: 4
-    frontmatter:
-      column_title: zbr_title
-      column_slug: zbr_slug
-      column_date: zbr_date
-      column_sort: false
-      column_category: zbr_category
+      column_category: category_fieldname

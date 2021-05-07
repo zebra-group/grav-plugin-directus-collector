@@ -2,6 +2,7 @@
 namespace Grav\Plugin;
 
 use Composer\Autoload\ClassLoader;
+use Grav\Common\Cache;
 use Grav\Common\Plugin;
 use Grav\Plugin\DirectusCollector\Utility\DirectusCollectorUtility;
 use RecursiveDirectoryIterator;
@@ -194,9 +195,11 @@ class DirectusCollectorPlugin extends Plugin
                             $this->createFile($translationFrontmatter, $dataSet['id'], $mapping, $translation['languages_code']['code']);
                         }
                     }
+                    Cache::clearCache();
                 }
             } catch(\Exception $e) {
                 dump($e);
+                Cache::clearCache();
                 $this->grav['debugger']->addException($e);
                 exit(500);
             }

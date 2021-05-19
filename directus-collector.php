@@ -2,6 +2,7 @@
 namespace Grav\Plugin;
 
 use Composer\Autoload\ClassLoader;
+use Grav\Common\Cache;
 use Grav\Common\Plugin;
 use Grav\Plugin\DirectusCollector\Utility\DirectusCollectorUtility;
 use RecursiveDirectoryIterator;
@@ -140,7 +141,12 @@ class DirectusCollectorPlugin extends Plugin
         $folderList = glob($mapping['path'] . '/*' , GLOB_ONLYDIR);
 
         foreach($response['data'] as $dataSet) {
-            if(!array_key_exists($mapping['frontmatter']['column_slug'], $dataSet) || !$dataSet[$mapping['frontmatter']['column_slug']] ) {
+            if(
+                isset($mapping['frontmatter']['column_slug'])
+                && $mapping['frontmatter']['column_slug']
+                && array_key_exists($mapping['frontmatter']['column_slug'], $dataSet)
+                && !$dataSet[$mapping['frontmatter']['column_slug']]
+            ) {
 
                 $slug = $slugger->slug($dataSet[$mapping['frontmatter']['column_title']]);
                 $dataSet[$mapping['frontmatter']['column_slug']] = $slug->lower()->toString();
@@ -183,9 +189,17 @@ class DirectusCollectorPlugin extends Plugin
                 if($dataSet['status'] === 'published' || ($dataSet['status'] === 'preview' && (isset($this->grav['config']['system']['env']['state']) && $this->grav['config']['system']['env']['state'] === 'preview'))) {
                     $this->createFile($frontMatter, $dataSet['id'], $mapping);
                     array_push($filePathArray, $mapping['path'] . '/' . $dataSet['id']);
+                    if(isset($dataSet['translations'])) {
+                        foreach ($dataSet['translations'] as $translation) {
+                            $translationFrontmatter = $this->setFileHeaders($dataSet, $mapping, $collection, $translation);
+                            $this->createFile($translationFrontmatter, $dataSet['id'], $mapping, $translation['languages_code']['code']);
+                        }
+                    }
+                    Cache::clearCache();
                 }
             } catch(\Exception $e) {
                 dump($e);
+                Cache::clearCache();
                 $this->grav['debugger']->addException($e);
                 exit(500);
             }
@@ -217,12 +231,20 @@ class DirectusCollectorPlugin extends Plugin
      * @param string $frontMatter
      * @param $folderName
      * @param $mapping
+     * @param string $translationKey
      */
-    private function createFile(string $frontMatter, $folderName, $mapping) {
+    private function createFile(string $frontMatter, $folderName, $mapping, string $translationKey = '') {
+
+        if($translationKey) {
+            $filename = $mapping['filename'] . '.' . substr($translationKey, 0, 2) . '.md';
+        } else {
+            $filename = $mapping['filename'] . '.md';
+        }
+
         if (!is_dir($mapping['path'] . '/' .  $folderName)) {
             mkdir($mapping['path'] . '/' . $folderName);
         }
-        $fp = fopen($mapping['path'] . '/' . $folderName . '/' . $mapping['filename'], 'w');
+        $fp = fopen($mapping['path'] . '/' . $folderName . '/' . $filename, 'w');
         if(file_exists($mapping['path'] . '/' . $folderName . '/data.json')) {
             unlink($mapping['path'] . '/' . $folderName . '/data.json');
         }
@@ -250,17 +272,18 @@ class DirectusCollectorPlugin extends Plugin
      * @param array $dataSet
      * @param array $mapping
      * @param string $collection
+     * @param string $translation
      * @return string
      */
-    private function setFileHeaders(array $dataSet, array $mapping, string $collection) {
+    private function setFileHeaders(array $dataSet, array $mapping, string $collection, array $translation = []) {
         $timestamp = strtotime($dataSet[$mapping['frontmatter']['column_date']]);
         $dateString = "'" . date('d-m-Y H:i', $timestamp) . "'";
 
         $frontmatterContent =  '---' . "\n" .
-            'title: ' . "'" . htmlentities($dataSet[$mapping['frontmatter']['column_title']], ENT_QUOTES) . "'\n" .
+            'title: ' . "'" . (isset($translation[$mapping['frontmatter']['column_title']]) ? htmlentities($translation[$mapping['frontmatter']['column_title']], ENT_QUOTES) : htmlentities($dataSet[$mapping['frontmatter']['column_title']], ENT_QUOTES)) . "'\n" .
             'date: ' . $dateString . "\n" .
             ($mapping['frontmatter']['column_sort'] ? 'sort: ' . $dataSet[$mapping['frontmatter']['column_sort']] . "\n" : '') .
-            'slug: ' . $dataSet[$mapping['frontmatter']['column_slug']] . "\n" .
+            'slug: ' . ($translation[$mapping['frontmatter']['column_slug']] ?? $dataSet[$mapping['frontmatter']['column_slug']]) . "\n" .
             $this->generateTaxonomySettings($dataSet, $mapping) .
             'directus:' . "\n".
             '    collection: ' . $collection . "\n".
@@ -273,11 +296,17 @@ class DirectusCollectorPlugin extends Plugin
         return $frontmatterContent;
     }
 
-    private function generateTaxonomySettings(array $dataSet, array $mapping) {
+    /**
+     * @param array $dataSet
+     * @param array $mapping
+     * @param array $translation
+     * @return string
+     */
+    private function generateTaxonomySettings(array $dataSet, array $mapping, array $translation = []) {
         if(isset($dataSet[$mapping['frontmatter']['column_category']])) {
             $frontmatterContent = 'taxonomy:' . "\n" .
                 '    category:' . "\n" .
-                '        - ' . $dataSet[$mapping['frontmatter']['column_category']] . "\n";
+                '        - ' . ($translation[$mapping['frontmatter']['column_category']] ?? $dataSet[$mapping['frontmatter']['column_category']]) . "\n";
 
             return $frontmatterContent;
         }

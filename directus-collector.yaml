@@ -1,5 +1,6 @@
 enabled: true
 redirect_route: /404
+
 mapping:
   zbr_cases:
     path: 'user/pages/04.arbeiten'
@@ -11,6 +12,11 @@ mapping:
       column_date: modified_on
       column_sort: sort
       column_category: false
+    filter:
+      zbr_business_unit:
+        mm_field: zbr_business_unit_id
+        value: 2
+        operator: _in
   zbr_blogpost:
     path: 'user/pages/08.blog'
     filename: 'post.md'

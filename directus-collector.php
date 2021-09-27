@@ -283,15 +283,25 @@ class DirectusCollectorPlugin extends Plugin
             'title: ' . "'" . (isset($translation[$mapping['frontmatter']['column_title']]) ? htmlentities($translation[$mapping['frontmatter']['column_title']], ENT_QUOTES) : htmlentities($dataSet[$mapping['frontmatter']['column_title']], ENT_QUOTES)) . "'\n" .
             'date: ' . $dateString . "\n" .
             ($mapping['frontmatter']['column_sort'] ? 'sort: ' . $dataSet[$mapping['frontmatter']['column_sort']] . "\n" : '') .
-            'slug: ' . ($translation[$mapping['frontmatter']['column_slug']] ?? $dataSet[$mapping['frontmatter']['column_slug']]) . "\n" .
-            $this->generateTaxonomySettings($dataSet, $mapping) .
-            'directus:' . "\n".
-            '    collection: ' . $collection . "\n".
-            '    depth: ' . $mapping['depth'] . "\n".
-            '    id: ' . $dataSet['id'] . "\n" .
-            '---';
+            'slug: ' . ($translation[$mapping['frontmatter']['column_slug']] ?? $dataSet[$mapping['frontmatter']['column_slug']]) . "\n";
 
-
+        if ( isset( $mapping['frontmatter']['flex'] ) && $mapping['frontmatter']['flex'] ) {
+            $frontmatterContent .=
+                $this->generateTaxonomySettings($dataSet, $mapping) .
+                'flex:' . "\n".
+                '  - collection: ' . $collection . "\n".
+                '    id: ' . $dataSet['id'] . "\n" .
+                '---';
+        }
+        else {
+            $frontmatterContent .=
+                $this->generateTaxonomySettings($dataSet, $mapping) .
+                'directus:' . "\n".
+                '    collection: ' . $collection . "\n".
+                '    depth: ' . $mapping['depth'] . "\n".
+                '    id: ' . $dataSet['id'] . "\n" .
+                '---';
+        }
 
         return $frontmatterContent;
     }

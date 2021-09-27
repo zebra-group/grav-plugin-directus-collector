@@ -51,32 +51,26 @@ mapping:
       column_date: date_fieldname
       column_sort: sort
       column_category: category_fieldname
+      flex: true
   table2_name:
     ...
 ```
-enabled: true - enables or disables the plugin. Default: true
 
-redirect_route - this is the route for disabled (draft) collection items
-
-table_name - replace it with the collection name for what you want to configure the child page generator
-
-path: - the path from the parent folder. Under this path the collector generates subfolder with frontmatter maarkdown files.
-
-filename: 'child_page' - will be used for name generation of the .md files. by default it generates child_page.md. if your site is multilingual, it will generate the translations too.
-
-depth: - the depth for the directus request. This says, which depth will be generated for the directus plugin frontmatter
-
-frontmatter: - here begins the frontmatter generator definition for the directus plugin
-
-column_title: - the field name of the title. Will be used for frontmatter title attribute and slug generation, if no slug field is defined
-
-column_slug: - the slug field. if you dont have a slug field, set it to false
-
-column_date: - the date field for the generated page
-
-column_sort: the sort field of your collection. if you have no sorting, set it to false
-
-column_category: - the field for your category. if you dont use taxonomy, set it to false
+| Option | Impact |
+| --- | --- |
+| `enabled: true` | Enables or disables the plugin. Default: true |
+| `redirect_route` | This is the route for disabled (draft) collection items |
+| `table_name`  | Replace it with the collection name for what you want to configure the child page generator |
+| `path` | The path from the parent folder. Under this path the collector generates subfolder with frontmatter maarkdown files. |
+| `filename: 'child_page'` | Will be used for name generation of the .md files. by default it generates child_page.md. if your site is multilingual, it will generate the translations too. |
+| `depth:` | The depth for the directus request. This says, which depth will be generated for the directus plugin frontmatter |
+| `frontmatter:` | Here begins the frontmatter generator definition for the directus plugin |
+| `column_title:` | The field name of the title. Will be used for frontmatter title attribute and slug generation, if no slug field is defined |
+| `column_slug:` | The slug field. if you dont have a slug field, set it to false |
+| `column_date:` | The date field for the generated page |
+| `column_sort:` | The sort field of your collection. if you have no sorting, set it to false |
+| `column_category:` | The field for your category. if you dont use taxonomy, set it to false |
+| `flex` | If set `true` alters the frontmatter for usage of custom flex-object logic instead of `directus.get()` in templates. |
 
 Note that if you use the Admin Plugin, a file with your configuration named directus-collector.yaml will be saved in the `user/config/plugins/`-folder once the configuration is saved in the Admin.
 

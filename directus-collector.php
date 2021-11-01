@@ -276,14 +276,16 @@ class DirectusCollectorPlugin extends Plugin
      * @return string
      */
     private function setFileHeaders(array $dataSet, array $mapping, string $collection, array $translation = []) {
-        $timestamp = strtotime($dataSet[$mapping['frontmatter']['column_date']]);
-        $dateString = "'" . date('d-m-Y H:i', $timestamp) . "'";
-
         $frontmatterContent =  '---' . "\n" .
             'title: ' . "'" . (isset($translation[$mapping['frontmatter']['column_title']]) ? htmlentities($translation[$mapping['frontmatter']['column_title']], ENT_QUOTES) : htmlentities($dataSet[$mapping['frontmatter']['column_title']], ENT_QUOTES)) . "'\n" .
-            'date: ' . $dateString . "\n" .
             ($mapping['frontmatter']['column_sort'] ? 'sort: ' . $dataSet[$mapping['frontmatter']['column_sort']] . "\n" : '') .
             'slug: ' . ($translation[$mapping['frontmatter']['column_slug']] ?? $dataSet[$mapping['frontmatter']['column_slug']]) . "\n";
+
+        if ( isset( $mapping['frontmatter']['column_date'] ) ) {
+            $timestamp = strtotime($dataSet[$mapping['frontmatter']['column_date']]);
+            $dateString = "'" . date('d-m-Y H:i', $timestamp) . "'";
+            $frontmatterContent .= 'date: ' . $dateString . "\n";
+        }
 
         if ( isset( $mapping['frontmatter']['flex'] ) && $mapping['frontmatter']['flex'] ) {
             $frontmatterContent .=

@@ -99,6 +99,17 @@ class DirectusCollectorPlugin extends Plugin
      */
     private function update() {
 
+        if(file_exists('user/pages/.lock')) {
+            echo json_encode([
+                'status' => 200,
+                'message' => 'locked'
+            ], JSON_THROW_ON_ERROR);
+            Cache::clearCache();
+            exit(200);
+        }
+
+        touch('user/pages/.lock');
+
         $directusUtil = new DirectusCollectorUtility(
             $this->config["plugins.directus"]['directus']['directusAPIUrl'],
             $this->grav,
@@ -122,6 +133,8 @@ class DirectusCollectorPlugin extends Plugin
             'status' => 'success',
             'message' => 'Sites synchronized'
         ]);
+
+        unlink('user/pages/.lock');
         exit(200);
     }
 

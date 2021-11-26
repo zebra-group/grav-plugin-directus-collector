@@ -100,12 +100,16 @@ class DirectusCollectorPlugin extends Plugin
     private function update() {
 
         if(file_exists('user/pages/.lock')) {
-            echo json_encode([
-                'status' => 200,
-                'message' => 'locked'
-            ], JSON_THROW_ON_ERROR);
-            Cache::clearCache();
-            exit(200);
+            if(time() - filemtime('user/pages/.lock') > ($this->config["plugins.directus"]['lockfileLifetime'] ?? 120)) {
+                unlink('user/pages/.lock');
+            } else {
+                echo json_encode([
+                    'status' => 200,
+                    'message' => 'locked'
+                ], JSON_THROW_ON_ERROR);
+                Cache::clearCache();
+                exit(200);
+            }
         }
 
         touch('user/pages/.lock');
